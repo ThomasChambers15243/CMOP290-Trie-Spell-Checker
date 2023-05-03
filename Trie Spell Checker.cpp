@@ -101,17 +101,29 @@ void PrintWord(TrieNode* root, const char word[])
 }
 
 // Search of all possible options
-void GetAllPossibleWords(TrieNode* root, char letter)
+vector<std::string> GetAllPossibleWordsFromNodeRoot(TrieNode* root, std::string word, vector<std::string> words)
 {
 	TrieNode* currentNode = root;
-
 	for (const std::pair<char, TrieNode*>& el : currentNode->children)
-	{
-		if (letter == el.first)
+	{	
+		if (currentNode->IsWord)
 		{
-			currentNode = currentNode->children[el.first];
+			words.push_back(word);
+
+			return words;
 		}
+		else
+		{			
+			if (words.size() > 10)
+			{
+				return words;
+			}
+			word += el.first;
+			GetAllPossibleWordsFromNodeRoot(currentNode, word, words);
+		}
+
 	}
+	return words;
 }
 
 std::vector<string> GetAllWords(std::string filePath)
@@ -143,25 +155,11 @@ int main()
 	{		
 		InsertWord(root, a.data());
 	}
+	
+	std::string word = "";
+	vector<std::string> words;
+	//words = GetAllPossibleWordsFromNodeRoot(root, word, words);
 
-	if (Search(root, "dscvfgvvfd"))
-	{
-		PrintWord(root, "dscvfgvvfd");
-		cout << "\n" << endl;
-	}
-	else {
-		cout << "word not found" << endl;
-	}
-
-	if (Search(root, "abeltree"))
-	{
-		PrintWord(root, "abeltree");
-		cout << "\n" << endl;
-	}
-	else {
-		cout << "word not found" << endl;
-	}
-
-
+	cout << "ran" << endl;
 	return 0;
 }
