@@ -83,6 +83,7 @@ bool Search(TrieNode* root, const char word[])
 	return false;
 }
 
+
 void PrintWord(TrieNode* root, const char word[])
 {
 	TrieNode* currentNode = root;
@@ -98,32 +99,6 @@ void PrintWord(TrieNode* root, const char word[])
 			}
 		}
 	}
-}
-
-// Search of all possible options
-vector<std::string> GetAllPossibleWordsFromNodeRoot(TrieNode* root, std::string word, vector<std::string> words)
-{
-	TrieNode* currentNode = root;
-	for (const std::pair<char, TrieNode*>& el : currentNode->children)
-	{	
-		if (currentNode->IsWord)
-		{
-			words.push_back(word);
-
-			return words;
-		}
-		else
-		{			
-			if (words.size() > 10)
-			{
-				return words;
-			}
-			word += el.first;
-			GetAllPossibleWordsFromNodeRoot(currentNode, word, words);
-		}
-
-	}
-	return words;
 }
 
 std::vector<string> GetAllWords(std::string filePath)
@@ -154,12 +129,29 @@ int main()
 	for (auto& a : Words)
 	{		
 		InsertWord(root, a.data());
-	}
+	}	
 	
-	std::string word = "";
-	vector<std::string> words;
+	// Loop to run user imput tests
+	while (true)
+	{
+		std::cout << "Enter a word" << endl;
+		string newWord;
+		cin >> newWord;
+		const char* cstr = newWord.c_str();
+
+		if (!Search(root, cstr))
+		{
+			std::cout << "Not a Word" << endl;
+		}
+		else 
+		{
+			std::cout << "Good Spelling" << endl;
+		}
+	}
+	//std::string word = "";
+	//vector<std::string> words;
 	//words = GetAllPossibleWordsFromNodeRoot(root, word, words);
 
-	cout << "ran" << endl;
+	std::cout << "ran" << endl;
 	return 0;
 }
