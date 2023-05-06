@@ -2,6 +2,7 @@
 //
 #pragma once
 #include "Trie Spell Checker.h"
+#include "Instrumentor.h"
 #include <unordered_map>
 #include <fstream>
 #include <string>
@@ -9,7 +10,42 @@
 #include <vector>
 // #define NDEBUG
 #include <cassert>
+#include <chrono>
+
 using namespace std;
+
+
+class Timer
+{
+public:
+	Timer()
+	{
+		m_StartTimepoint = std::chrono::high_resolution_clock::now();
+	}
+
+	~Timer()
+	{
+		Stop();
+	}
+
+	void Stop()
+	{
+		auto endTimepoint = std::chrono::high_resolution_clock::now();
+
+		auto start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch().count();
+		auto end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
+
+		auto duration = end - start;
+		double ms = duration * 0.01;
+		
+		std::cout << duration << "us ("<< ms << "ms)" << endl;
+		
+
+	}
+
+private:
+	std::chrono::time_point< std::chrono::high_resolution_clock> m_StartTimepoint;
+};
 
 /// <summary>
 /// Node for each leaf in tree
@@ -104,6 +140,7 @@ void PrintWord(TrieNode* root, const char word[])
 	}
 }
 
+
 std::vector<string> GetAllWords(std::string filePath)
 {
 	string word;
@@ -126,6 +163,13 @@ std::vector<string> GetAllWords(std::string filePath)
 
 int main()
 {
+
+	{
+		Timer time;
+		std::vector<string> Words = GetAllWords("C:/codeProjects/tree/Trie Spell Checker/AllWords.txt");
+	}
+	return 0;
+
 	std::vector<string> Words = GetAllWords("C:/codeProjects/tree/Trie Spell Checker/AllWords.txt");
 	TrieNode* root = GenerateNode();
 
@@ -133,27 +177,25 @@ int main()
 	{		
 		InsertWord(root, a.data());
 	}	
-	
-	// Loop to run user imput tests
-	while (true)
-	{
-		std::cout << "Enter a word" << endl;
-		string newWord;
-		cin >> newWord;
-		const char* cstr = newWord.c_str();
 
-		if (!Search(root, cstr))
-		{
-			std::cout << "Not a Word" << endl;
-		}
-		else 
-		{
-			std::cout << "Good Spelling" << endl;
-		}
-	}
-	//std::string word = "";
-	//vector<std::string> words;
-	//words = GetAllPossibleWordsFromNodeRoot(root, word, words);
+	
+	//// Loop to run user imput tests
+	//while (true)
+	//{
+	//	std::cout << "Enter a word" << endl;
+	//	string newWord;
+	//	cin >> newWord;
+	//	const char* cstr = newWord.c_str();
+
+	//	if (!Search(root, cstr))
+	//	{
+	//		std::cout << "Not a Word" << endl;
+	//	}
+	//	else 
+	//	{
+	//		std::cout << "Good Spelling" << endl;
+	//	}
+	//}
 
 	std::cout << "ran" << endl;
 	return 0;
