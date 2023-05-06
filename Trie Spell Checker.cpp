@@ -1,11 +1,12 @@
 ﻿// Trie Spell Checker.cpp : Defines the entry point for the application.
 //
-
+#pragma once
 #include "Trie Spell Checker.h"
 #include <unordered_map>
 #include <fstream>
 #include <string>
 #include <string_view>
+#include <vector>
 // #define NDEBUG
 #include <cassert>
 using namespace std;
@@ -19,16 +20,18 @@ struct TrieNode
 	bool IsWord = false;
 };
 
+
 /// <summary>
 /// Generates the root node of the Trie
 /// </summary>
 /// <returns>Pointer to root node</returns>
-struct TrieNode *GenerateNode()
+TrieNode* GenerateNode()
 {
 	struct TrieNode *tNode = new TrieNode();
 	tNode->IsWord = false;
 	return tNode;
 }
+
 /// <summary>
 /// Insert a word into the Trie
 /// </summary>
@@ -104,7 +107,7 @@ void PrintWord(TrieNode* root, const char word[])
 std::vector<string> GetAllWords(std::string filePath)
 {
 	string word;
-	vector<string> words;
+	std::vector<string> words;
 
 	ifstream WordFile(filePath);
 
@@ -155,3 +158,5 @@ int main()
 	std::cout << "ran" << endl;
 	return 0;
 }
+
+
