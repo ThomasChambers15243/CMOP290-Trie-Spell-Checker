@@ -140,12 +140,25 @@ void PrintWord(TrieNode* root, const char word[])
 	}
 }
 
-
-std::vector<string> GetAllWords(std::string filePath)
+struct LinkedListNode
 {
 	string word;
-	std::vector<string> words;
+	LinkedListNode* next;
+};
 
+
+//TrieNode* GenerateNode()
+//{
+//	struct TrieNode* tNode = new TrieNode();
+//	tNode->IsWord = false;
+//	return tNode;
+//}
+LinkedListNode GetAllWords(std::string filePath)
+{
+	string word;
+	LinkedListNode currentWord;
+
+	bool notFirstWord = false;
 	ifstream WordFile(filePath);
 
 	assert(WordFile.is_open());
@@ -153,12 +166,22 @@ std::vector<string> GetAllWords(std::string filePath)
 	{
 		while (std::getline(WordFile, word))
 		{
-			words.push_back(word);
+			if (!notFirstWord)
+			{
+				currentWord.word = word;
+				currentWord.next = &LinkedListNode();
+			}
+			else
+			{
+				currentWord.next->word = word;
+				currentWord.next->next = &LinkedListNode();
+			}
+
 		}
 		WordFile.close();
 	}
 
-	return words;
+	return firstWord;
 }
 
 int main()
