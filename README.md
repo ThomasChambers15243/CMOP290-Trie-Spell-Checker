@@ -10,14 +10,14 @@ A **Tree** is a hierarchical data structure comprised of nodes containing infoma
 - It must be able to contain lots of data, as it needs to contain all the words in the English language
 - It must a fast Big(0), as to be able to search the entire dictionary
 
-Unlike other Tree structures, such as a binary tree or AVL tree, a trie does not need any balancing actions performed upon it to keep its efficiency. Keys, as they are just letters, are unordered and are only dependent on the node above it, but independent from the leafs on the same level. Each node contains a boolean value, indicating whether the node is at the end of a word, and an unordered map, containing the letter as its key and a pointer to the next node. However, many implementations also us a standard map. 
+Unlike other Tree structures, such as a binary tree or AVL tree, a trie does not need any balancing actions performed upon it to keep its efficiency. This is key to its speed, as hundreds of thousands of insertions are needed, constant balancing would greatly slow down the Trie generation. Keys, as they are just letters, are unordered and are only dependent on the node above it, but independent from the leafs on the same level. Each node contains a boolean value, indicating whether the node is at the end of a word, and an unordered map, containing the letter as its key and a pointer to the next node. However, many implementations also us a standard map. 
 
 ### Map VS Unordered Map
 
 Both types of maps are contained in the C++ standard library. A map is a "sorted associative container that contains key-value pairs with unique keys". They're implemented using Red-black trees, a self-balancing form of binary tree. An unordered-map is a "associative container that contains key-value pairs with unique keys", implemented using a hash-table. Hash-tables have a very fast search time, since once the hash is commutated, the exact location is know, only when there are duplicated key, are they keys placed into bucket, that then have to be searched linearly in O(1).
 
 I choice to use an unordered-map instead of a standard map for two main reasons.
--  Its constant time search. Insertion speed is not critical in a spell checker, as the user will only interact with the Search complexity when spelling a word. Therefore, this optimization greatly improves the user's experience.
+-  Its constant time search. Insertion order is not important in a trie, so this greatly increase search speed.
 - There is no need to balancing. Hundreds of thousands of words need to be inserted and stored. Constant balancing when inserting each letter of each word would greatly decreases generation time, when this isn't an issue with an unordered map.
 
 |                    | **Map**                          | **Unordered_Map**            |
@@ -30,6 +30,16 @@ I choice to use an unordered-map instead of a standard map for two main reasons.
 | **Deletion**       | Log(N) + Rebalance               | O(1) Average O(N) Worst Case |
 | **Space**          | O(n)                             | O(n)                         |
 
-## Post Design Optimization Decisions    
+## Methods for loading Words from .txt into the Trie
 
-## Next Steps
+All words are stored in a text file of 370,105 words. My first solution to loading these into the trie was to first read all the words into a vector and then iterate through that vector, inserting each word into the tree. However, the problem with this is that the vector has to update its size every time its filled, which will happen thousands of times as the words are loading. This is an expensive process. 
+
+An optimization to this is too use a linked list. After the vectors creation, its only accessed in a linear fashion. The benefits gained from using a vector, fast, indexed access, is never used. A linked list would allow easy iteration from start to end, the only access needed to the structure. When a new word is added, its just added as a new node, with its memory address being pointed to by the previous node. When loading the words into the Trie, once iteration is used throughout the list. This would increase loading speed as theres never a need to resize and allocate new memory to the list.
+
+A better optimization is to avoid loading the words into anything but the Trie. When the file is opened, as each word is read, InsertWord(word) is called. This methods consistency improves performance times.
+|Number of Iterations|Vector Method|On File Read Method|
+|--------------------|-------------|-------------------|
+|5|24819|20975|
+|10|26641|21337|
+|15|28239|21163|
+|20|28083|22306|

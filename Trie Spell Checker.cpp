@@ -18,6 +18,9 @@ using namespace std;
 class Timer
 {
 public:
+	
+	long long duration = 0;
+
 	Timer()
 	{
 		m_StartTimepoint = std::chrono::high_resolution_clock::now();
@@ -30,17 +33,27 @@ public:
 
 	void Stop()
 	{
+		SetDuration();
+
+		double ms = duration * 0.01;
+		//std::cout << duration << "us ("<< ms << "ms)" << endl;		
+
+	}
+
+	void SetDuration()
+	{
 		auto endTimepoint = std::chrono::high_resolution_clock::now();
 
 		auto start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch().count();
 		auto end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
 
-		auto duration = end - start;
-		double ms = duration * 0.01;
-		
-		std::cout << duration << "us ("<< ms << "ms)" << endl;
-		
+		duration = end - start;
+	}
 
+	long long GetDuration()
+	{
+		SetDuration();
+		return duration*0.01;
 	}
 
 private:
@@ -161,43 +174,69 @@ std::vector<string> GetAllWords(std::string filePath)
 	return words;
 }
 
+
 int main()
 {
-	// Insert Words as they're read from the file
-	
-	//	Timer time;
-
-		std::string filePath = "C:/codeProjects/tree/Trie Spell Checker/AllWords.txt";
-		std::string word;
-		TrieNode* root = GenerateNode();
-
-		ifstream WordFile(filePath);
-
-		assert(WordFile.is_open());
-
-		if (WordFile.is_open())
+	const int length = 5;
+	// File Read Method
+	long long timerCount[length];
+	for (int count = 0; count < length; count++)
+	{
+		// Insert Words as they're read from the file
 		{
-			// For every word, insert it into the tree
-			while (std::getline(WordFile, word))
+			Timer time;
+
+			std::string filePath = "C:/codeProjects/tree/Trie Spell Checker/AllWords.txt";
+			std::string word;
+			TrieNode* root = GenerateNode();
+
+			ifstream WordFile(filePath);
+
+			assert(WordFile.is_open());
+
+			if (WordFile.is_open())
 			{
-				InsertWord(root, word.data());
+				// For every word, insert it into the tree
+				while (std::getline(WordFile, word))
+				{
+					InsertWord(root, word.data());
+				}
+				WordFile.close();
 			}
-			WordFile.close();
+			timerCount[count] = time.GetDuration();
 		}
-	
-	
-	//// Read words into vector and then insert them
-	//{
-	//	Timer timer;
-	//	std::vector<string> Words = GetAllWords("C:/codeProjects/tree/Trie Spell Checker/AllWords.txt");
-	//	TrieNode* root = GenerateNode();
+	}
+	long long meanTimeOpenFileMethod = 0;
+	for(auto & a : timerCount)
+	{
+		meanTimeOpenFileMethod += a;
+	}
+	meanTimeOpenFileMethod = meanTimeOpenFileMethod / length;
+	cout << "File Read Mean Time: " << meanTimeOpenFileMethod << endl;
 
-	//	for (auto& a : Words)
-	//	{
-	//		InsertWord(root, a.data());
-	//	}
-	//}
+	// Vector Method	
+	for (int count = 0; count < length; count++)
+	{
+		// Read words into vector and then insert them
+		{
+			Timer timer;
+			std::vector<string> Words = GetAllWords("C:/codeProjects/tree/Trie Spell Checker/AllWords.txt");
+			TrieNode* root = GenerateNode();
 
+			for (auto& a : Words)
+			{
+				InsertWord(root, a.data());
+			}
+			timerCount[count] = timer.GetDuration();
+		}
+	}
+	long long meanTimeVectorMethod = 0;
+	for (auto& a : timerCount)
+	{
+		meanTimeVectorMethod += a;
+	}
+	meanTimeVectorMethod = meanTimeVectorMethod / length;
+	cout << "Vector Mean Time: " << meanTimeVectorMethod << endl;
 	
 	// Loop to run user imput tests
 	while (true)
@@ -217,14 +256,14 @@ int main()
 	
 		const char* cStr = newWord.c_str();
 
-		if (!Search(root, cStr))
-		{
-			std::cout << "Not a Word" << endl;
-		}
-		else 
-		{
-			std::cout << "Good Spelling" << endl;
-		}
+		//if (!Search(root, cStr))
+		//{
+		//	std::cout << "Not a Word" << endl;
+		//}
+		//else 
+		//{
+		//	std::cout << "Good Spelling" << endl;
+		//}
 	}
 
 	std::cout << "ran" << endl;
