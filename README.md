@@ -37,9 +37,9 @@ All words are stored in a text file of 370,105 words. My first solution to loadi
 An optimization to this is too use a linked list. After the vectors creation, its only accessed in a linear fashion. The benefits gained from using a vector, fast, indexed access, is never used. A linked list would allow easy iteration from start to end, the only access needed to the structure. When a new word is added, its just added as a new node, with its memory address being pointed to by the previous node. When loading the words into the Trie, once iteration is used throughout the list. This would increase loading speed as theres never a need to resize and allocate new memory to the list.
 
 A better optimization is to avoid loading the words into anything but the Trie. When the file is opened, as each word is read, InsertWord(word) is called. This methods consistency improves performance times.
-|Number of Iterations|Vector Method|On File Read Method|
+|Number of Iterations|Vector Method (milliseconds)|On File Read Method (milliseconds)|
 |--------------------|-------------|-------------------|
-|5|24819|20975|
-|10|26641|21337|
-|15|28239|21163|
-|20|28083|22306|
+|5|2481.9|2097.5|
+|10|2664.1|2133.7|
+|15|2823.9|2116.3|
+|20|2808.3|2230.6|

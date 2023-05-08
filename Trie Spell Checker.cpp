@@ -1,12 +1,10 @@
 ﻿// Trie Spell Checker.cpp : Defines the entry point for the application.
-//
+
 #pragma once
 #include "Trie Spell Checker.h"
-#include "Instrumentor.h"
 #include <unordered_map>
 #include <fstream>
 #include <string>
-#include <string_view>
 #include <vector>
 // #define NDEBUG
 #include <cassert>
@@ -14,17 +12,34 @@
 
 using namespace std;
 
-
+/// <summary>
+/// Timer Class for measuring algorithm speed
+/// </summary>
 class Timer
 {
 public:
 	
-	long long duration = 0;
 
 	Timer()
 	{
 		m_StartTimepoint = std::chrono::high_resolution_clock::now();
 	}
+
+	/// <summary>
+	/// Returns the duration of the timer in milliseconds
+	/// </summary>
+	/// <returns></returns>
+	double GetDuration()
+	{
+		SetDuration();
+		return duration*0.01;
+	}
+
+private:
+	
+	double duration = 0;
+	
+	std::chrono::time_point< std::chrono::high_resolution_clock> m_StartTimepoint;
 
 	~Timer()
 	{
@@ -34,10 +49,8 @@ public:
 	void Stop()
 	{
 		SetDuration();
-
 		double ms = duration * 0.01;
-		//std::cout << duration << "us ("<< ms << "ms)" << endl;		
-
+		std::cout << "Duration: " << ms << " (ms)" << endl;
 	}
 
 	void SetDuration()
@@ -49,15 +62,6 @@ public:
 
 		duration = end - start;
 	}
-
-	long long GetDuration()
-	{
-		SetDuration();
-		return duration*0.01;
-	}
-
-private:
-	std::chrono::time_point< std::chrono::high_resolution_clock> m_StartTimepoint;
 };
 
 /// <summary>
@@ -114,7 +118,12 @@ void InsertWord(TrieNode *root, const char word[])
 }
 
 
-
+/// <summary>
+/// Finds the given word in a Trie
+/// </summary>
+/// <param name="root">Start of the Trie</param>
+/// <param name="word">Word to be found</param>
+/// <returns>True if found, else false</returns>
 bool Search(TrieNode* root, const char word[])
 {
 	TrieNode* currentNode = root;
@@ -135,7 +144,11 @@ bool Search(TrieNode* root, const char word[])
 	return false;
 }
 
-
+/// <summary>
+/// Prints out a word from its nodes in the Trie
+/// </summary>
+/// <param name="root">Start of the Trie</param>
+/// <param name="word">Word to be printed</param>
 void PrintWord(TrieNode* root, const char word[])
 {
 	TrieNode* currentNode = root;
@@ -153,96 +166,43 @@ void PrintWord(TrieNode* root, const char word[])
 	}
 }
 
-
-std::vector<string> GetAllWords(std::string filePath)
+int main()
 {
-	string word;
-	std::vector<string> words;
+
+	// Insert Words as they're read from the file
+	std::string filePath = "C:/codeProjects/tree/Trie Spell Checker/AllWords.txt";
+	std::string word;
+
+	// Creates the start of the Trie
+	TrieNode* root = GenerateNode();
 
 	ifstream WordFile(filePath);
 
 	assert(WordFile.is_open());
+	
+	// For every word, insert it into the tree
 	if (WordFile.is_open())
 	{
 		while (std::getline(WordFile, word))
 		{
-			words.push_back(word);
+			// Inset word into a string, passing through each string as a char* array
+			InsertWord(root, word.data());
 		}
 		WordFile.close();
 	}
-
-	return words;
-}
-
-
-int main()
-{
-	const int length = 5;
-	// File Read Method
-	long long timerCount[length];
-	for (int count = 0; count < length; count++)
+	// If file could not be opened, end program
+	else 
 	{
-		// Insert Words as they're read from the file
-		{
-			Timer time;
-
-			std::string filePath = "C:/codeProjects/tree/Trie Spell Checker/AllWords.txt";
-			std::string word;
-			TrieNode* root = GenerateNode();
-
-			ifstream WordFile(filePath);
-
-			assert(WordFile.is_open());
-
-			if (WordFile.is_open())
-			{
-				// For every word, insert it into the tree
-				while (std::getline(WordFile, word))
-				{
-					InsertWord(root, word.data());
-				}
-				WordFile.close();
-			}
-			timerCount[count] = time.GetDuration();
-		}
+		cout << "File could not open" << endl;
+		return 1;
 	}
-	long long meanTimeOpenFileMethod = 0;
-	for(auto & a : timerCount)
-	{
-		meanTimeOpenFileMethod += a;
-	}
-	meanTimeOpenFileMethod = meanTimeOpenFileMethod / length;
-	cout << "File Read Mean Time: " << meanTimeOpenFileMethod << endl;
-
-	// Vector Method	
-	for (int count = 0; count < length; count++)
-	{
-		// Read words into vector and then insert them
-		{
-			Timer timer;
-			std::vector<string> Words = GetAllWords("C:/codeProjects/tree/Trie Spell Checker/AllWords.txt");
-			TrieNode* root = GenerateNode();
-
-			for (auto& a : Words)
-			{
-				InsertWord(root, a.data());
-			}
-			timerCount[count] = timer.GetDuration();
-		}
-	}
-	long long meanTimeVectorMethod = 0;
-	for (auto& a : timerCount)
-	{
-		meanTimeVectorMethod += a;
-	}
-	meanTimeVectorMethod = meanTimeVectorMethod / length;
-	cout << "Vector Mean Time: " << meanTimeVectorMethod << endl;
 	
-	// Loop to run user imput tests
+
+	// Takes user input and checks its spelling by searching the Trie
 	while (true)
 	{
 		std::cout << "Enter a word" << endl;
-		string newWord;
+		string newWord = "";
 		cin >> newWord;
 		
 		// Convert user's word to lower case
@@ -253,21 +213,33 @@ int main()
 				newWord[i] += 32;
 			}
 		}
-	
-		const char* cStr = newWord.c_str();
 
-		//if (!Search(root, cStr))
-		//{
-		//	std::cout << "Not a Word" << endl;
-		//}
-		//else 
-		//{
-		//	std::cout << "Good Spelling" << endl;
-		//}
+		// Find word and outputs accordingly
+		if (!Search(root, newWord.data()))
+		{
+			std::cout << "Not a Word" << endl;
+			std::string userAnswer = "";
+			// Give the user the option to add their word
+			cout << "Add Word? (y/n)" << endl;
+			cin >> userAnswer;
+			if (userAnswer == "y")
+			{
+				InsertWord(root, newWord.data());
+				if (Search(root, newWord.data()))
+				{
+					cout << "Word added successfully" << endl;
+				}
+				else
+				{
+					cout << "Something went wrong :(" << endl;
+				}
+			}
+		}
+		else
+		{
+			std::cout << "Good Spelling" << endl;
+		}
 	}
-
-	std::cout << "ran" << endl;
+	
 	return 0;
 }
-
-

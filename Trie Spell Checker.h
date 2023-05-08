@@ -17,5 +17,3 @@ void InsertWord(TrieNode* root, const char word[]);
 bool Search(TrieNode* root, const char word[]);
 
 void PrintWord(TrieNode* root, const char word[]);
-
-std::vector<string> GetAllWords(std::string filePath);
