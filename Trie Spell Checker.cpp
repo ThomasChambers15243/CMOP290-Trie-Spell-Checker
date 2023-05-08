@@ -163,39 +163,69 @@ std::vector<string> GetAllWords(std::string filePath)
 
 int main()
 {
-
-	{
-		Timer time;
-		std::vector<string> Words = GetAllWords("C:/codeProjects/tree/Trie Spell Checker/AllWords.txt");
-	}
-	return 0;
-
-	std::vector<string> Words = GetAllWords("C:/codeProjects/tree/Trie Spell Checker/AllWords.txt");
-	TrieNode* root = GenerateNode();
-
-	for (auto& a : Words)
-	{		
-		InsertWord(root, a.data());
-	}	
-
+	// Insert Words as they're read from the file
 	
-	//// Loop to run user imput tests
-	//while (true)
-	//{
-	//	std::cout << "Enter a word" << endl;
-	//	string newWord;
-	//	cin >> newWord;
-	//	const char* cstr = newWord.c_str();
+	//	Timer time;
 
-	//	if (!Search(root, cstr))
+		std::string filePath = "C:/codeProjects/tree/Trie Spell Checker/AllWords.txt";
+		std::string word;
+		TrieNode* root = GenerateNode();
+
+		ifstream WordFile(filePath);
+
+		assert(WordFile.is_open());
+
+		if (WordFile.is_open())
+		{
+			// For every word, insert it into the tree
+			while (std::getline(WordFile, word))
+			{
+				InsertWord(root, word.data());
+			}
+			WordFile.close();
+		}
+	
+	
+	//// Read words into vector and then insert them
+	//{
+	//	Timer timer;
+	//	std::vector<string> Words = GetAllWords("C:/codeProjects/tree/Trie Spell Checker/AllWords.txt");
+	//	TrieNode* root = GenerateNode();
+
+	//	for (auto& a : Words)
 	//	{
-	//		std::cout << "Not a Word" << endl;
-	//	}
-	//	else 
-	//	{
-	//		std::cout << "Good Spelling" << endl;
+	//		InsertWord(root, a.data());
 	//	}
 	//}
+
+	
+	// Loop to run user imput tests
+	while (true)
+	{
+		std::cout << "Enter a word" << endl;
+		string newWord;
+		cin >> newWord;
+		
+		// Convert user's word to lower case
+		for (int i = 0; i < newWord.length(); i++)
+		{
+			if (newWord[i] >= 65 && newWord[i] <= 90)
+			{
+				newWord[i] += 32;
+			}
+		}
+	
+		const char* cStr = newWord.c_str();
+
+		if (!Search(root, cStr))
+		{
+			std::cout << "Not a Word" << endl;
+		}
+		else 
+		{
+			std::cout << "Good Spelling" << endl;
+		}
+	}
 
 	std::cout << "ran" << endl;
 	return 0;
