@@ -5,7 +5,8 @@ to implement a spell checker, allowing the user to check their spelling of words
 
 This approach uses several optimizations to handle creation, insertion and search.
 
-For complete documentation and explanations of exploration, please refer to the poster found in /documentation.
+For complete documentation and explanations of exploration, please refer to the poster found in /documentation. 
+Included is also the complete diagnostic report, to access, it needs to be open in Visual Studio 2022.
 
 ### Usage
 
