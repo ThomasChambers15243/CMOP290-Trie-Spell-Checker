@@ -9,8 +9,10 @@
 // #define NDEBUG
 #include <cassert>
 #include <chrono>
+#include <filesystem>
 
 using namespace std;
+namespace fs = std::filesystem;
 
 /// <summary>
 /// Timer Class for measuring algorithm speed
@@ -170,7 +172,9 @@ int main()
 {
 
 	// Insert Words as they're read from the file
-	std::string filePath = "C:/codeProjects/tree/Trie Spell Checker/AllWords.txt";
+	//std::string filePath = "C:/codeProjects/tree/Trie Spell Checker/AllWords.txt";
+	fs::path directoryPath = fs::current_path();
+	string filePath = directoryPath.generic_string() + "/AllWords.txt";
 	std::string word;
 
 	// Creates the start of the Trie
